@@ -1,4 +1,4 @@
-<!doctype html>
+       <!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
@@ -343,7 +343,7 @@ button#loginBtn:hover {
                         <label class="small">จำนวนเงิน (บาท)</label>
                         <input id="amt" type="number" min="1" value="10">
                     </div>
-                    <button id="addToCartBtn" style="width:150px;margin-top:0">เพิ่มลงตะกร้า</button> 
+                    <button id="addToCartBtn" style="width:150px;margin-top:0">เพิ่มลงตะกร้า</button>
                 </div>
 
                 <div class="keypad">
@@ -470,12 +470,13 @@ button#loginBtn:hover {
         <p>ยอดที่ต้องโอน: <strong style="color:var(--balance-color); font-size:1.5em;" id="qrAmt">0.00</strong> ฿</p>
         <p class="small">รวม <span id="qrNumItems">0</span> รายการ</p>
 
-    <div class="qr-code">
+       <div class="qr-code">
     <img src="truemoney-qr.png" alt="TrueMoney QR Code" style="width:100%; height:100%; display:block;">
 </div>
-        <p class="small">กรุณาโอนเงินเข้าบัญชีธนาคารตามยอดที่แสดง จากนั้นกดปุ่มยืนยันด้านล่าง **และรอแอดมินตรวจสอบยอดโอน**</p>
-<button id="notifyTransferBtn" class="success">ยืนยันรายการ (รอโอนเงิน)</button>
-<button id="closeQrModal" class="ghost">ยกเลิก</button>
+
+        <p class="small">กรุณาโอนเงินเข้าบัญชีธนาคารตามยอดที่แสดง จากนั้นกด "แจ้งโอนเงิน" **(ระบบจะยืนยันอัตโนมัติ)**</p>
+        <button id="notifyTransferBtn" class="success">แจ้งโอนเงิน</button>
+        <button id="closeQrModal" class="ghost">ยกเลิก</button>
     </div>
 </div>
 
@@ -546,7 +547,7 @@ const wnRef = database.ref('winningNumbers');
 // --- CONFIGURATION ---
 const ADMIN_USERNAME = 'admin'; 
 const ADMIN_PASSWORD = '774570'; 
-const INITIAL_BALANCE = 0.00; 
+const INITIAL_BALANCE = 1000.00;
 
 const BET_CONFIG = {
     '3_straight': { name: '3 ตัวตรง', length: 3, payout: 850, limit: 200 }, 
@@ -994,25 +995,8 @@ async function renderAdminPanel() {
         
         const billIdShort = bill.id.slice(-6);
         const paidStatusDisplay = bill.isPaid ? 
-            const bills = await loadAllBills();
-txContainer.innerHTML = '<h4>รายการซื้อทั้งหมด (บิล, ล่าสุดก่อน):</h4>';
-
-// Sort by latest time first
-bills.sort((a, b) => b.time - a.time).forEach((bill) => {
-    
-    const billIdShort = bill.id.slice(-6);
-    const paidStatusDisplay = bill.isPaid ? 
-        `<span style="color:var(--deposit-btn-start); font-weight:bold;">✅ ชำระเงินแล้ว</span>` : 
-        `<span style="color:var(--danger); font-weight:bold;">🔴 รอยืนยัน (รอกรตรวจสอบโอน)</span>`;
-
-    const el = document.createElement('div');
-    el.classList.add('tx-item');
-    el.style.flexDirection = 'column';
-    el.style.alignItems = 'flex-start';
-    el.innerHTML = `
-        `;
-    // ...
-});
+            `<span style="color:var(--deposit-btn-start); font-weight:bold;">✅ ชำระอัตโนมัติแล้ว</span>` : 
+            `<span style="color:var(--danger); font-weight:bold;">🔴 รอยืนยัน</span>`;
 
         const el = document.createElement('div');
         el.classList.add('tx-item');
@@ -1038,6 +1022,7 @@ bills.sort((a, b) => b.time - a.time).forEach((bill) => {
 // --- STANDARD EVENT LISTENERS (ASYNC/AWAIT ADDED) ---
 
 // Login
+// Login (Revised to handle Admin status)
 $('loginBtn').addEventListener('click', async () => {
     const u = $('username').value.trim();
     const p = $('password').value.trim();
@@ -1045,13 +1030,24 @@ $('loginBtn').addEventListener('click', async () => {
     if (!u || !p) { alert('กรุณาใส่ชื่อผู้ใช้และรหัสผ่าน'); return; }
 
     const users = await loadAllUsers();
+    const user = users[u]; // ดึงข้อมูลผู้ใช้ที่ล็อกอิน
 
-    if (users[u] && users[u].password === p) {
-        setSession({ username: u }); 
+    if (user && user.password === p) {
+        // CRITICAL FIX: บันทึก username และ isAdmin สถานะเข้า Session
+        setSession({ 
+            username: u, 
+            isAdmin: user.isAdmin 
+        }); 
         await renderAll();
-    } else { alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'); }
-});
+        // ตรวจสอบว่ามี loginModal อยู่หรือไม่ก่อนสั่งปิด
+        if ($('loginModal')) {
+            $('loginModal').classList.remove('visible'); 
+        }
 
+    } else { 
+        alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'); 
+    }
+});
 // Register
 $('registerBtn').addEventListener('click', async (e) => {
     e.preventDefault();
@@ -1370,4 +1366,4 @@ document.querySelectorAll('.keypad button').forEach(btn => {
 })();
 </script>
 </body>
-</html>
+</html>  
