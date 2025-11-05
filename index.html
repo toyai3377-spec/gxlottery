@@ -1,0 +1,1254 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gx lottery+ — แทงหวย & บริการ</title>
+<style>
+/* --- MODIFIED: NEON BLUE / CYBERPUNK THEME --- */
+:root{
+  --bg-dark:#09091A;       /* Darker Blue-Black for BG */
+  --bg-medium:#151838;     /* Dark Blue for BG gradient end */
+  --bg-light:#2A3258;      /* Lighter Blue for structural elements */
+  --card-bg:#1A2040;       /* Dark Blue for card backgrounds */
+  --accent-light:#00FFFF;  /* Electric Cyan (Primary Accent) */
+  --accent-dark:#00BFFF;   /* Deep Sky Blue (Secondary Accent) */
+  --text-main:#E0F7FA;     /* Light Aqua-White for main text */
+  --text-muted:#9BB5D0;    /* Muted Blue-Grey */
+  --border-color:rgba(0,255,255,0.3); /* Transparent Cyan border */
+  --input-bg:#10142A;      /* Very Dark Blue for inputs */
+  --glass: rgba(255,255,255,0.05); 
+  --balance-color:#ffe066; /* Yellow/Gold for balance */
+  --deposit-btn-start:#4ade80; /* Electric Green for deposit (Success) */
+  --deposit-btn-end:#16a34a;   /* Darker Green */
+  --withdraw-btn-start:#ef4444; /* Red for withdraw (Danger) */
+  --withdraw-btn-end:#cc3333;
+  --danger:#ef4444; 
+  --modern-shadow: 0 10px 30px rgba(0,0,0,0.7); 
+}
+/* --- END MODIFIED: NEON BLUE / CYBERPUNK THEME --- */
+
+*{box-sizing:border-box;font-family:Inter,sans-serif}
+html,body{
+    height:100%;
+    margin:0;
+    /* Updated background gradient */
+    background:linear-gradient(180deg,var(--bg-dark) 0%, var(--bg-medium) 100%);
+    color:var(--text-main);
+    font-size:16px
+}
+/* Layout for Mobile First */
+.wrap{max-width:960px;margin:0 auto;padding:20px 10px}
+.main-content{display:flex;flex-direction:column;gap:20px}
+.lotto-panel{flex:1}
+.sidebar{width:100%}
+
+@media (min-width: 768px) {
+  .wrap{padding:40px 20px}
+  .main-content{flex-direction:row;gap:30px}
+  .sidebar{width:300px}
+}
+
+.card{background:var(--card-bg);padding:20px;border-radius:12px;box-shadow:var(--modern-shadow);color:var(--text-main)}
+/* --- MODIFIED: Input Fields for bigger size --- */
+input[type=text],input[type=password],input[type=number],select{
+    width:100%;
+    padding:14px; /* Increased padding */
+    min-height: 50px; /* New minimum height */
+    font-size: 1.1em; /* Increased font size */
+    border-radius:8px;
+    border:1px solid var(--border-color);
+    background:var(--input-bg);
+    color:var(--text-main);
+    margin-top:10px; /* Adjusted margin */
+}
+/* --- END MODIFIED --- */
+
+/* Updated default button style for better contrast */
+button{
+  background:var(--accent-light); /* Single color for simplicity */
+  color:var(--bg-dark); /* Ensure text is dark for high contrast */
+  padding:12px 15px;
+  border-radius:8px;
+  border:0;
+  cursor:pointer;
+  margin-top:12px;
+  width:100%;
+  font-weight:600;
+  transition:opacity 0.2s, background 0.2s; /* Added background transition */
+}
+button:hover:not(:disabled){opacity:0.9; background: var(--accent-dark); color: white;} /* Darker hover effect */
+button:disabled{opacity:0.5;cursor:not-allowed}
+
+/* Styling for the new 'Chat with us' link to look like a button */
+.contact-link{
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none; /* Remove underline */
+    margin-top: 12px;
+    width: 100%;
+    font-weight: 600;
+}
+.contact-link:hover{opacity:0.9; background: var(--card-bg);}
+
+button.ghost{background:transparent;border:1px solid var(--border-color);color:var(--text-main)}
+button.danger{background:var(--danger);color:white}
+button.success{background:linear-gradient(180deg,var(--deposit-btn-start),var(--deposit-btn-end));color:var(--bg-dark);} /* Use deposit gradient for success */
+/* Special style for the admin button to be more like a 'withdraw' button visually */
+button#adminPanelBtn{
+    background: linear-gradient(180deg, var(--withdraw-btn-start), var(--withdraw-btn-end));
+    color:white;
+}
+button#adminPanelBtn:hover{
+    opacity:0.9;
+    background: var(--withdraw-btn-start); /* Keep consistent hover for red */
+}
+
+.small{font-size:14px;color:var(--text-muted)}
+.hidden{display:none}
+
+/* Lottery specific styles */
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.keypad button{
+  padding:18px 0;
+  /* Updated keypad button background with gradient and glow */
+  background: linear-gradient(145deg, var(--bg-medium), var(--bg-light)); /* Dark to Light Blue Gradient */
+  color:var(--text-main);
+  font-size:24px;
+  border:1px solid rgba(255,255,255,0.2); /* Lighter border */
+  border-radius:12px; /* Slightly more rounded */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Subtle shadow */
+  transition:background 0.3s, box-shadow 0.3s, border-color 0.3s; 
+  position:relative;
+  overflow:hidden;
+}
+.keypad button:hover:not(:disabled){
+  background: linear-gradient(145deg, var(--bg-light), var(--bg-medium)); /* Reverse gradient on hover */
+  border-color: var(--accent-light); /* Brighter border */
+  box-shadow:0 0 25px rgba(0,255,255,0.7), 0 0 10px rgba(0,255,255,0.5); /* Cyan glow */
+}
+
+/* Modal Styling */
+.modal{
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.8);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 0.3s, visibility 0.3s;
+}
+.modal.visible{opacity:1;visibility:visible}
+.modal-content{
+    background:var(--card-bg);
+    padding:30px;
+    border-radius:12px;
+    max-width:400px;
+    width:90%;
+    box-shadow:var(--modern-shadow);
+    text-align:center;
+}
+.qr-code{
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    margin:15px auto;
+    width:200px;
+    height:200px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* Cart Specific */
+#cartList .cart-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-color)}
+#cartList .cart-item:last-child{border-bottom:none}
+#cartTotalArea{padding-top:15px;margin-top:10px;border-top:1px solid var(--border-color);font-size:1.1em;font-weight:700;display:flex;justify-content:space-between}
+#removeCartItem{width:auto;padding:5px 10px;margin:0;font-size:12px}
+.tx-list{max-height:200px;overflow-y:auto;margin-top:12px;background:var(--glass);padding:10px;border-radius:8px}
+/* Updated TX-ITEM style for Bill Summary */
+.tx-item{
+    padding:8px 0;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer; /* Add cursor pointer for expand feature if implemented */
+}
+.tx-item:last-child{border-bottom:none}
+.status-badge{padding:2px 6px;border-radius:4px;font-size:12px;font-weight:600}
+.pending{background:#fbbf24;color:#0a1811}
+.win{background:#72ed9a;color:#0a1811}
+.lose{background:#ef4444;color:#fff}
+.pending-admin{background:#fbbf24;color:#0a1811} /* Changed to yellow/orange for 'wait for admin to confirm' */
+
+/* Login Card - NEW MODERN STYLE */
+#loginCard{
+  max-width:400px;
+  margin:100px auto;
+  padding:30px; 
+  background: var(--card-bg); 
+  backdrop-filter: blur(5px); 
+  border: 1px solid var(--border-color); 
+  border-radius: 18px; 
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+  position: relative; 
+  z-index: 10;
+}
+#loginCard::before {
+    content: '';
+    position: absolute;
+    inset: -2px; 
+    border-radius: 20px;
+    padding: 2px;
+    /* Neon Cyan Border Glow */
+    background: linear-gradient(45deg, var(--accent-light), var(--accent-dark), var(--accent-light));
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+    opacity: 0.8;
+}
+
+/* --- MODIFIED: Login Card H2 Title --- */
+#loginCard h2{
+  text-align:center;
+  margin-bottom:25px;
+  color:var(--accent-light); /* Bright Cyan */
+  text-shadow: 0 0 8px rgba(0,255,255,0.8), 0 0 15px rgba(0,255,255,0.4); /* Cyan glow */
+  letter-spacing: 1px;
+}
+/* --- END MODIFIED --- */
+
+
+/* --- MODIFIED: Login & Register Buttons (Simplified and reduced size) --- */
+.login-register-buttons {
+    display: flex;
+    flex-direction: column; /* Stack vertically on small screens */
+    gap: 10px; /* Reduced space between buttons */
+    margin-top: 25px; 
+}
+@media (min-width: 480px) { 
+    .login-register-buttons {
+        flex-direction: row; 
+    }
+}
+
+.login-register-buttons button,
+.login-register-buttons a.register-btn {
+    flex: 1; 
+    background: var(--accent-light); /* Use main accent color */
+    color: var(--bg-dark);
+    padding: 12px 15px; /* Reduced padding */
+    border-radius: 8px; /* Squared off corners */
+    border: 1px solid var(--border-color); /* Simplified border */
+    box-shadow: var(--modern-shadow); /* Keep general shadow */
+    font-size: 1em; /* Reduced font size */
+    font-weight: 600; 
+    text-decoration: none; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    gap: 6px; /* Reduced space between icon and text */
+    transition: all 0.2s ease-in-out;
+    margin-top: 0 !important; /* Ensure no extra margin from default button style */
+}
+
+.login-register-buttons button:hover,
+.login-register-buttons a.register-btn:hover {
+    background: var(--accent-dark); /* Darker hover effect */
+    color: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+    transform: none; /* Removed lift effect */
+}
+/* Ensure the login button specifically uses these new styles */
+button#loginBtn {
+    margin-top: 0; 
+    background: linear-gradient(180deg, #1084D0 0%, #0D6EB3 100%); /* Use the blue gradient for login button only */
+    color: white;
+    border: 1px solid var(--accent-light);
+}
+button#loginBtn:hover {
+    background: linear-gradient(180deg, #2495E4 0%, #1084D0 100%); 
+}
+
+.login-register-buttons a.register-btn {
+    background: transparent; /* Make register button a ghost button */
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+.login-register-buttons a.register-btn:hover {
+    background: var(--input-bg);
+}
+/* --- END MODIFIED --- */
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card" id="loginCard">
+        <h2>เข้าสู่ระบบ Gx lottery+</h2> 
+        <input id="username" placeholder="ชื่อผู้ใช้">
+        <input id="password" type="password" placeholder="รหัสผ่าน">
+
+        <div class="login-register-buttons">
+            <button id="loginBtn"><span>&#8620;</span> เข้าสู่ระบบ</button>
+            <a href="#" class="register-btn" onclick="alert('ฟังก์ชันสมัครสมาชิกยังไม่เปิดใช้งาน'); return false;"><span>&#x2795;</span> สมัครสมาชิก</a>
+        </div>
+    </div>
+
+    <div class="hidden" id="mainApp">
+        <header>
+            <div class="user-info">
+                <strong id="user-name"></strong>
+                <button id="logout" class="ghost" style="width:auto;margin-top:0">ออกจากระบบ</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="card lotto-panel">
+                <h3>แทงหวย</h3>
+                <div style="margin-bottom:15px; display:flex; gap:15px;">
+                    <div style="flex:1;">
+                        <label class="small">เลือกประเภทหวย</label>
+                        <select id="lottoType" style="margin-top:8px">
+                            <option value="thai" selected>หวยไทย (1/16)</option>
+                            <option value="lao">หวยลาว (จ/พ/ศ)</option>
+                        </select>
+                    </div>
+                    <div style="flex:1;">
+                         <label class="small">ประเภทการแทง</label>
+                        <select id="betType" style="margin-top:8px">
+                            </select>
+                    </div>
+                </div>
+
+                <label class="small">เลขที่ต้องการซื้อ (ความยาวตามประเภทแทง)</label>
+                <input id="num" type="text" placeholder="เลือกเลขหรือพิมพ์เอง" maxlength="3">
+
+                <div style="display:flex;gap:15px;margin-top:15px;align-items:flex-end">
+                    <div style="flex:1">
+                        <label class="small">จำนวนเงิน (บาท)</label>
+                        <input id="amt" type="number" min="1" value="10">
+                    </div>
+                    <button id="addToCartBtn" style="width:150px;margin-top:0">เพิ่มลงตะกร้า</button>
+                </div>
+
+                <div class="keypad">
+                    <button>1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                    <button>7</button>
+                    <button>8</button>
+                    <button>9</button>
+                    <button style="grid-column:1 / span 2; background:var(--bg-light)" id="clearBtn">ล้าง</button>
+                    <button>0</button>
+                </div>
+
+                <div style="margin-top:30px">
+                    <h4>รายการในตะกร้า (<span id="cartCount">0</span> รายการ)</h4>
+                    <div id="cartList" class="tx-list" style="max-height:150px; padding:0 10px;">
+                        </div>
+                    <div id="cartTotalArea">
+                        <span>ยอดรวมทั้งหมด:</span>
+                        <span id="cartTotal">0.00 ฿</span>
+                    </div>
+                    <button id="payLineBtnForCart" class="success" disabled>ชำระเงิน</button>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="card" style="margin-bottom:20px">
+                    <h3>รายการซื้อทั้งหมด (บิล)</h3>
+                    <button id="checkResultsBtn" class="success" style="margin-bottom:10px">ตรวจผลหวยล่าสุด</button>
+                    <div class="tx-list">
+                        <div id="txs">ยังไม่มีการซื้อ</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>ฝ่ายบริการ</h3>
+                    <a href="#" target="_blank" class="contact-link">แชทกับเรา</a>
+                    <a href="#" target="_blank" class="contact-link" style="margin-top:8px">ติดต่อทาง WhatsApp</a>
+                </div>
+
+                <div id="adminToolCard" class="card hidden" style="margin-top:20px">
+                    <h3>เครื่องมือแอดมิน</h3>
+                    <button id="adminPanelBtn" class="danger">เปิดหน้าแอดมิน</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden" id="adminPanel">
+        <div class="card" style="margin:20px auto; max-width:960px;">
+            <h2>ระบบหลังบ้านจำลอง (Admin Panel)</h2>
+            <button id="closeAdminPanel" class="ghost" style="width:auto">← กลับสู่หน้าหลัก</button>
+            <hr style="margin:20px 0; border-color:var(--border-color);">
+
+            <h3>1. จัดการยอดเงินผู้ใช้</h3>
+            <div id="balanceManagement">
+                <div style="display:flex; gap:15px; align-items:flex-end;">
+                    <div style="flex:2;">
+                        <label class="small">เลือกผู้ใช้</label>
+                        <select id="userToEditSelect"></select>
+                    </div>
+                    <div style="flex:1;">
+                        <label class="small">จำนวนเงิน (บวก/ลบ)</label>
+                        <input id="balanceAmtInput" type="number" value="100" placeholder="100 หรือ -100">
+                    </div>
+                    <button id="updateBalanceBtn" style="width:150px;margin-top:0">อัปเดตยอดเงิน</button>
+                </div>
+            </div>
+
+            <h3 style="margin-top:30px;">2. ตั้งค่าผลรางวัลหวย 🎱</h3>
+            <div id="wnSettings">
+                <h4>หวยไทย</h4>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:3;">
+                        <label class="small">รางวัลที่ 1 (R1 - 6 ตัว)</label>
+                        <input id="thaiR1" type="text" maxlength="6" placeholder="345898">
+                    </div>
+                    <div style="flex:1;">
+                        <label class="small">ล่าง 2 ตัว</label>
+                        <input id="thaiL2" type="text" maxlength="2" placeholder="87">
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label class="small">ท้าย 3 ตัว (ชุด 1)</label>
+                        <input id="thaiL3_1" type="text" maxlength="3" placeholder="111">
+                    </div>
+                    <div style="flex:1;">
+                        <label class="small">ท้าย 3 ตัว (ชุด 2)</label>
+                        <input id="thaiL3_2" type="text" maxlength="3" placeholder="690">
+                    </div>
+                </div>
+                
+                <h4 style="margin-top:20px;">หวยลาว</h4>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:3;">
+                        <label class="small">ผลชุดใหญ่ (R1 - 6 ตัว)</label>
+                        <input id="laoR1" type="text" maxlength="6" placeholder="702135">
+                    </div>
+                    <div style="flex:1;">
+                        <label class="small">ล่าง 2 ตัว</label>
+                        <input id="laoL2" type="text" maxlength="2" placeholder="21">
+                    </div>
+                </div>
+                <div style="flex:1;">
+                    <label class="small">3 ตัวบน</label>
+                    <input id="laoL3" type="text" maxlength="3" placeholder="135">
+                </div>
+                <button id="saveWinningNumbersBtn" class="success" style="margin-top:20px;">บันทึกผลรางวัล</button>
+            </div>
+
+            <h3 style="margin-top:30px;">3. รายการซื้อทั้งหมด (บิล)</h3>
+            <div id="txListAdmin" class="tx-list"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="qrModal">
+    <div class="modal-content">
+        <h3>สแกนเพื่อชำระเงิน</h3>
+        <p>ยอดที่ต้องโอน: <strong style="color:var(--balance-color); font-size:1.5em;" id="qrAmt">0.00</strong> ฿</p>
+        <p class="small">รวม <span id="qrNumItems">0</span> รายการ</p>
+
+        <div class="qr-code">
+            <div style="font-size:12px; color:#222">[QR CODE]</div>
+        </div>
+
+        <p class="small">กรุณาโอนเงินเข้าบัญชีธนาคารตามยอดที่แสดง จากนั้นกด "แจ้งโอนเงิน" **(ระบบจะยืนยันอัตโนมัติ)**</p>
+        <button id="notifyTransferBtn" class="success">แจ้งโอนเงิน</button>
+        <button id="closeQrModal" class="ghost">ยกเลิก</button>
+    </div>
+</div>
+
+<div class="modal" id="billDetailModal">
+    <div class="modal-content" style="max-width:500px">
+        <h3>รายละเอียดบิล #<span id="billIdDisplay"></span></h3>
+        <p class="small" id="billUserTime"></p>
+        <hr style="border-color:var(--border-color); margin:10px 0;">
+        <div style="max-height:200px; overflow-y:auto; text-align:left;">
+            <ul id="billItemsList" style="list-style:none; padding:0; margin:0;">
+                </ul>
+        </div>
+        <div id="billSummary" style="padding-top:10px; margin-top:10px; border-top:1px solid var(--border-color); font-weight:700; display:flex; justify-content:space-between;">
+            <span>ยอดรวม:</span>
+            <span id="billTotalDisplay">0.00 ฿</span>
+        </div>
+        <button id="closeBillDetailModal" style="width:100px;margin:15px auto 0 auto">ปิด</button>
+    </div>
+</div>
+
+
+<div class="modal" id="resultModal">
+    <div class="card" style="max-width:400px;text-align:center">
+        <h3 id="resultHeader"></h3>
+        <p id="resultDetails"></p>
+        <button id="closeResultModal" style="width:100px;margin:15px auto 0 auto">ปิด</button>
+    </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const USERS_KEY = 'soksay_users';
+const SESS_KEY = 'soksay_session';
+const TX_KEY = 'soksay_txs_bills';
+const WN_KEY = 'soksay_winning_numbers_admin'; // NEW: Key for saving admin set winning numbers
+
+// --- NEW ADMIN CONFIGURATION ---
+const ADMIN_USERNAME = 'admin'; 
+const ADMIN_PASSWORD = '774570'; 
+
+// --- CONFIGURATION ---
+const BET_CONFIG = {
+    '3_straight': { name: '3 ตัวตรง', length: 3, payout: 850, limit: 200 }, 
+    '3_tod': { name: '3 ตัวโต๊ด', length: 3, payout: 120, limit: 150 },
+    '2_top': { name: '2 ตัวบน', length: 2, payout: 95, limit: 200 },
+    '2_bottom': { name: '2 ตัวล่าง', length: 2, payout: 95, limit: 200 },
+    'run_top': { name: 'วิ่งบน', length: 1, payout: 3, limit: 9999 },
+    'run_bottom': { name: 'วิ่งล่าง', length: 1, payout: 4, limit: 9999 },
+};
+
+// --- INITIAL DEFAULT WINNING NUMBERS ---
+const DEFAULT_WINNING_NUMBERS = {
+    'thai': { 
+        name: 'หวยไทย', 
+        R1: '345898', // รางวัลที่ 1
+        L3: ['111', '690'], // เลขท้าย 3 ตัว
+        L2: '87', // เลขท้าย 2 ตัว
+    },
+    'lao': {
+        name: 'หวยลาว',
+        R1: '702135', // ผลชุดใหญ่
+        L3: ['135'], // 3 ตัวบน
+        L2: '21', // 2 ตัวล่าง
+    }
+};
+
+// --- CORE UTILITY FUNCTIONS ---
+let purchases = JSON.parse(localStorage.getItem('soksay_lotto_purchases') || '{}');
+let cart = []; 
+
+function loadWinningNumbers() {
+    const savedWN = JSON.parse(localStorage.getItem(WN_KEY) || 'null');
+    return savedWN || DEFAULT_WINNING_NUMBERS;
+}
+
+function saveWinningNumbers(wn) {
+    localStorage.setItem(WN_KEY, JSON.stringify(wn));
+    WINNING_NUMBERS = wn; // Update global variable immediately
+}
+
+let WINNING_NUMBERS = loadWinningNumbers(); // Dynamic Winning Numbers
+
+function savePurchases() { localStorage.setItem('soksay_lotto_purchases', JSON.stringify(purchases)); }
+function loadUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); }
+function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function getSession() { return JSON.parse(localStorage.getItem(SESS_KEY) || 'null'); }
+function setSession(s) { localStorage.setItem(SESS_KEY, JSON.stringify(s)); }
+function clearSession() { localStorage.removeItem(SESS_KEY); }
+function loadBills() { return JSON.parse(localStorage.getItem(TX_KEY) || '[]'); }
+function saveBills(t) { localStorage.setItem(TX_KEY, JSON.stringify(t)); }
+function getBetName(betType) { return BET_CONFIG[betType] ? BET_CONFIG[betType].name : 'N/A'; }
+
+function getStatusBadge(bill) {
+    if (!bill.isPaid) return `<span class="status-badge pending-admin">🟡 รอยืนยันชำระ</span>`; 
+    if (bill.checked) {
+        const anyWin = bill.items.some(item => item.win);
+        return `<span class="status-badge ${anyWin ? 'win' : 'lose'}">${anyWin ? '✅ ถูกรางวัล' : '❌ ไม่ถูกรางวัล'}</span>`;
+    }
+    return `<span class="status-badge pending">⚪ ชำระแล้ว</span>`; 
+}
+
+function renderUserArea() {
+    const s = getSession();
+    const adminToolCard = $('adminToolCard'); 
+    const users = loadUsers(); 
+    const is_admin = s && s.username === ADMIN_USERNAME;
+
+    if (s) {
+        let userInfoText = `goldoraX - ${s.username}`;
+
+        if (is_admin && users[s.username]) {
+            // Admin balance display is fine
+            userInfoText += ` (ยอดเงิน: ${users[s.username].balance.toFixed(2)} ฿)`;
+        } else if (users[s.username]) {
+            // Display user balance here
+             userInfoText += ` (ยอดเงิน: ${users[s.username].balance.toFixed(2)} ฿)`;
+        } 
+
+        $('user-name').textContent = userInfoText;
+        $('loginCard').classList.add('hidden');
+        $('mainApp').classList.remove('hidden');
+
+        if (is_admin) {
+            adminToolCard.classList.remove('hidden');
+        } else {
+            adminToolCard.classList.add('hidden');
+        }
+
+    } else {
+        $('loginCard').classList.remove('hidden');
+        $('mainApp').classList.add('hidden');
+        adminToolCard.classList.add('hidden'); 
+    }
+}
+
+function renderTxs() {
+    const container = $('txs');
+    const bills = loadBills();
+    const s = getSession();
+    if (!s) { container.innerHTML = '<div>กรุณาเข้าสู่ระบบเพื่อดูประวัติ</div>'; return; }
+
+    const userBills = bills.filter(b => b.user === s.username);
+
+    container.innerHTML = userBills.length === 0 ? '<div>ยังไม่มีการซื้อ</div>' : '';
+    userBills.slice().reverse().forEach(bill => {
+        const el = document.createElement('div');
+        el.classList.add('tx-item');
+        el.setAttribute('data-bill-id', bill.id);
+
+        let winText = '';
+        if (bill.checked && bill.items.some(item => item.win)) {
+            const totalPayout = bill.items.reduce((sum, item) => sum + (item.payout || 0), 0);
+            winText = `<div style="font-weight:bold; color:var(--deposit-btn-start)">+${totalPayout.toFixed(2)} ฿</div>`;
+        }
+
+        el.innerHTML = `
+            <div>
+                <div><b>บิล #${bill.id.slice(-6)}</b> (${bill.items.length} รายการ)</div>
+                <div class="small">ยอดรวม: ${bill.totalAmt.toFixed(2)} ฿ | ${new Date(bill.time).toLocaleDateString()}</div>
+                ${winText}
+            </div>
+            ${getStatusBadge(bill)}
+        `;
+        container.appendChild(el);
+    });
+
+    container.querySelectorAll('.tx-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+            const billId = e.currentTarget.getAttribute('data-bill-id');
+            showBillDetailModal(billId);
+        });
+    });
+}
+
+function showBillDetailModal(billId) {
+    const bill = loadBills().find(b => b.id === billId);
+    if (!bill) return;
+
+    $('billIdDisplay').textContent = bill.id.slice(-6);
+    $('billUserTime').textContent = `ผู้ใช้: ${bill.user} | เวลา: ${new Date(bill.time).toLocaleString()}`;
+    $('billTotalDisplay').textContent = bill.totalAmt.toFixed(2) + ' ฿';
+
+    const list = $('billItemsList');
+    list.innerHTML = '';
+
+    bill.items.forEach(item => {
+        const lottoName = WINNING_NUMBERS[item.lottoType].name;
+        const betName = getBetName(item.betType);
+
+        let winStatus = '';
+        if (bill.checked) {
+            winStatus = item.win ? `<span style="color:var(--deposit-btn-start)"> (+${item.payout.toFixed(2)} ฿)</span>` : `<span style="color:var(--danger)"> (ไม่ถูก)</span>`;
+        }
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span style="font-weight:600; color:var(--balance-color)">${item.num}</span> 
+            (${betName}, ${lottoName}) x ${item.amt.toFixed(2)} ฿ 
+            ${winStatus}
+        `;
+        list.appendChild(li);
+    });
+
+    $('billDetailModal').classList.add('visible');
+}
+
+
+function renderCart() {
+    const container = $('cartList');
+    const payLineBtnForCart = $('payLineBtnForCart');
+    const cartTotal = cart.reduce((sum, item) => sum + item.amt, 0);
+
+    container.innerHTML = '';
+    if (cart.length === 0) {
+        container.innerHTML = '<div>ไม่มีรายการในตะกร้า</div>';
+        payLineBtnForCart.disabled = true;
+    } else {
+        cart.forEach((item, index) => {
+            const lottoName = WINNING_NUMBERS[item.lottoType].name;
+            const betName = getBetName(item.betType);
+            const el = document.createElement('div');
+            el.classList.add('cart-item');
+            el.innerHTML = `
+                <div>${item.num} (${betName}, ${lottoName}) x ${item.amt.toFixed(2)} ฿</div>
+                <button id="removeCartItem" data-index="${index}" class="danger" style="width:40px;padding:5px;margin:0">X</button>
+            `;
+            container.appendChild(el);
+        });
+        payLineBtnForCart.disabled = false;
+    }
+
+    payLineBtnForCart.textContent = `ชำระเงิน (${cartTotal.toFixed(2)} ฿)`;
+    $('cartTotal').textContent = `${cartTotal.toFixed(2)} ฿`;
+    $('cartCount').textContent = cart.length;
+
+    container.querySelectorAll('#removeCartItem').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = e.target.getAttribute('data-index');
+            cart.splice(index, 1);
+            renderCart();
+        });
+    });
+}
+
+function renderBetTypeOptions() {
+    const select = $('betType');
+    select.innerHTML = ''; 
+
+    const options = [
+        { value: '3_straight', text: '3 ตัวตรง (850x)' },
+        { value: '3_tod', text: '3 ตัวโต๊ด (120x)' },
+        { value: '2_top', text: '2 ตัวบน (95x)' },
+        { value: '2_bottom', text: '2 ตัวล่าง (95x)' },
+        { value: 'run_top', text: 'วิ่งบน (3x)' },
+        { value: 'run_bottom', text: 'วิ่งล่าง (4x)' },
+    ];
+
+    options.forEach(opt => {
+        const el = document.createElement('option');
+        el.value = opt.value;
+        el.textContent = opt.text;
+        select.appendChild(el);
+    });
+    updateNumberInputConfig();
+}
+
+function updateNumberInputConfig() {
+    const betType = $('betType').value;
+    const config = BET_CONFIG[betType];
+
+    if (config) {
+        $('num').setAttribute('maxlength', config.length);
+        $('num').value = $('num').value.substring(0, config.length);
+        $('num').placeholder = `กรอก ${config.length} หลัก`;
+    }
+}
+
+function renderAll() {
+    renderUserArea();
+    renderTxs();
+    renderCart();
+}
+
+function checkWin(lottoType, betType, num) {
+    const win = WINNING_NUMBERS[lottoType];
+    const config = BET_CONFIG[betType];
+    const numDigits = num.length;
+
+    const R1 = win.R1; 
+    const T3 = R1.slice(-3); 
+    const B2 = lottoType === 'thai' ? win.L2 : win.L2; // B2 is L2 for both, but for Thai it is the official 2-digit, for Lao it's the custom 2-digit
+
+    if (numDigits !== config.length) return { win: false, type: 'ความยาวไม่ถูกต้อง', payout: 0 };
+
+    let isWin = false;
+    let winType = config.name;
+
+    switch (betType) {
+        case '3_straight': 
+            isWin = (num === T3);
+            break;
+
+        case '3_tod': 
+            if (num.length === 3) {
+                const numArr = num.split('').sort().join('');
+                const T3Arr = T3.split('').sort().join('');
+                isWin = (numArr === T3Arr);
+            }
+            break;
+
+        case '2_top': 
+            isWin = (num === R1.slice(-2));
+            break;
+
+        case '2_bottom': 
+            isWin = (num === B2);
+            break;
+
+        case 'run_top': 
+            isWin = T3.includes(num);
+            winType = `วิ่งบน (${num})`;
+            break;
+
+        case 'run_bottom': 
+            isWin = B2.includes(num);
+            winType = `วิ่งล่าง (${num})`;
+            break;
+
+        default:
+            isWin = false;
+            break;
+    }
+
+    return { 
+        win: isWin, 
+        type: winType, 
+        payout: isWin ? config.payout : 0 
+    };
+}
+
+// --- ADMIN PANEL FUNCTIONS (ENHANCED) ---
+
+function showAdminPanel() {
+    const s = getSession();
+    if (!s || s.username !== ADMIN_USERNAME) {
+        alert('คุณไม่มีสิทธิ์เข้าถึงหน้าแอดมิน');
+        return;
+    }
+
+    $('mainApp').classList.add('hidden');
+    $('adminPanel').classList.remove('hidden');
+    renderAdminPanel();
+}
+
+function hideAdminPanel() {
+    $('adminPanel').classList.add('hidden');
+    $('mainApp').classList.remove('hidden');
+    renderAll();
+}
+
+function populateWinningNumbersInputs() {
+    const wn = loadWinningNumbers(); 
+
+    // Thai
+    $('thaiR1').value = wn.thai.R1;
+    $('thaiL2').value = wn.thai.L2;
+    $('thaiL3_1').value = wn.thai.L3[0] || '';
+    $('thaiL3_2').value = wn.thai.L3[1] || '';
+    
+    // Lao
+    $('laoR1').value = wn.lao.R1;
+    $('laoL2').value = wn.lao.L2;
+    $('laoL3').value = wn.lao.L3[0] || '';
+}
+
+function populateUserEditDropdown() {
+    const users = loadUsers();
+    const select = $('userToEditSelect');
+    select.innerHTML = '';
+    
+    // Create an option for each user
+    Object.keys(users).filter(u => u !== ADMIN_USERNAME).forEach(username => {
+        const option = document.createElement('option');
+        option.value = username;
+        option.textContent = `${username} (ยอดเงิน: ${users[username].balance.toFixed(2)} ฿)`;
+        select.appendChild(option);
+    });
+
+    if (select.children.length === 0) {
+        const option = document.createElement('option');
+        option.textContent = `ไม่มีผู้ใช้ทั่วไป`;
+        select.appendChild(option);
+        $('updateBalanceBtn').disabled = true;
+    } else {
+        $('updateBalanceBtn').disabled = false;
+    }
+}
+
+function renderAdminPanel() {
+    const txContainer = $('txListAdmin');
+    
+    // 1. Setup User Editing Dropdown
+    populateUserEditDropdown();
+
+    // 2. Setup Winning Number Inputs
+    populateWinningNumbersInputs();
+
+    // 3. Render Transaction List (Bills)
+    const bills = loadBills();
+    txContainer.innerHTML = '<h4>รายการซื้อทั้งหมด (บิล, ล่าสุดก่อน):</h4>';
+
+    bills.slice().reverse().forEach((bill, index) => {
+        
+        const billIdShort = bill.id.slice(-6);
+        const paidStatusDisplay = bill.isPaid ? 
+            `<span style="color:var(--deposit-btn-start); font-weight:bold;">✅ ชำระอัตโนมัติแล้ว</span>` : 
+            `<span style="color:var(--danger); font-weight:bold;">🔴 รอยืนยัน</span>`;
+
+        const el = document.createElement('div');
+        el.classList.add('tx-item');
+        el.style.flexDirection = 'column';
+        el.style.alignItems = 'flex-start';
+        el.innerHTML = `
+            <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <b>บิล #${billIdShort}</b> (${bill.items.length} รายการ) | ยอดรวม: ${bill.totalAmt.toFixed(2)} ฿
+                    <div class="small">${new Date(bill.time).toLocaleString()} โดย **${bill.user}**</div>
+                </div>
+                <div style="text-align:right;">${getStatusBadge(bill)}</div>
+            </div>
+            <div style="margin-top:10px; width:100%; display:flex; justify-content:space-between; align-items:center;">
+                <div class="small"><a href="#" onclick="showBillDetailModal('${bill.id}'); event.preventDefault();" style="color:var(--text-main)">[ดูรายละเอียดรายการย่อย]</a></div>
+                <div>${paidStatusDisplay}</div>
+            </div>
+        `;
+        txContainer.appendChild(el);
+    });
+}
+
+// --- NEW ADMIN ACTION FUNCTIONS ---
+
+// NEW: Function to save WN
+$('saveWinningNumbersBtn').addEventListener('click', () => {
+    const newThaiR1 = $('thaiR1').value.trim();
+    const newThaiL2 = $('thaiL2').value.trim();
+    const newThaiL3_1 = $('thaiL3_1').value.trim();
+    const newThaiL3_2 = $('thaiL3_2').value.trim();
+    const newLaoR1 = $('laoR1').value.trim();
+    const newLaoL2 = $('laoL2').value.trim();
+    const newLaoL3 = $('laoL3').value.trim();
+
+    // Basic Validation
+    if (newThaiR1.length !== 6 || newThaiL2.length !== 2 || newThaiL3_1.length !== 3 || newThaiL3_2.length !== 3 || newLaoR1.length !== 6 || newLaoL2.length !== 2 || newLaoL3.length !== 3) {
+        alert('กรุณากรอกผลรางวัลให้ครบถ้วนตามจำนวนหลักที่กำหนด (หวยไทย R1=6, L2=2, L3=3x2 / หวยลาว R1=6, L2=2, L3=3)');
+        return;
+    }
+
+    const newWN = {
+        'thai': { 
+            name: 'หวยไทย', 
+            R1: newThaiR1, 
+            L3: [newThaiL3_1, newThaiL3_2], 
+            L2: newThaiL2, 
+        },
+        'lao': {
+            name: 'หวยลาว',
+            R1: newLaoR1, 
+            L3: [newLaoL3], 
+            L2: newLaoL2, 
+        }
+    };
+
+    saveWinningNumbers(newWN);
+    alert('บันทึกผลรางวัลเรียบร้อยแล้ว! ผลรางวัลใหม่จะมีผลต่อการตรวจผลหวยในครั้งถัดไป');
+    populateWinningNumbersInputs(); // Re-populate to show saved state
+});
+
+// NEW: Function to update user balance
+$('updateBalanceBtn').addEventListener('click', () => {
+    const selectedUser = $('userToEditSelect').value;
+    const amount = Number($('balanceAmtInput').value);
+
+    if (!selectedUser || isNaN(amount) || amount === 0) {
+        alert('กรุณาเลือกผู้ใช้และระบุจำนวนเงินที่ถูกต้อง');
+        return;
+    }
+
+    let users = loadUsers();
+    
+    if (users[selectedUser]) {
+        users[selectedUser].balance += amount;
+        saveUsers(users);
+        alert(`อัปเดตยอดเงินผู้ใช้ ${selectedUser} สำเร็จ: ยอดเงินใหม่คือ ${users[selectedUser].balance.toFixed(2)} ฿`);
+        $('balanceAmtInput').value = 100; // Reset input
+
+        // Re-render UI
+        renderAdminPanel(); 
+        renderAll();
+    } else {
+        alert('ไม่พบผู้ใช้ที่เลือก');
+    }
+});
+
+// --- STANDARD EVENT LISTENERS ---
+
+// Login
+$('loginBtn').addEventListener('click', () => {
+    const u = $('username').value.trim();
+    const p = $('password').value.trim();
+
+    if (!u || !p) { alert('กรุณาใส่ชื่อผู้ใช้และรหัสผ่าน'); return; }
+
+    let users = loadUsers();
+
+    if (!users[ADMIN_USERNAME]) { 
+        users[ADMIN_USERNAME] = { password: ADMIN_PASSWORD, balance: 999999.00, txs: [] }; 
+        saveUsers(users); 
+    }
+
+    if (!users[u] && u !== ADMIN_USERNAME) { 
+        users[u] = { password: p, balance: 1000.00, txs: [] }; 
+        saveUsers(users); 
+        alert(`ลงทะเบียนสำเร็จ: ผู้ใช้ ${u} สร้างแล้ว (ยอดเงินเริ่มต้น 1,000.00 ฿)`);
+    } 
+
+    if (users[u] && users[u].password === p) {
+        setSession({ username: u, balance: users[u].balance }); 
+        renderAll();
+    } else { alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'); }
+});
+
+// Logout
+$('logout').addEventListener('click', () => {
+    clearSession();
+    renderAll();
+    $('username').value = '';
+    $('password').value = '';
+});
+
+// Update input config when bet type changes
+$('betType').addEventListener('change', updateNumberInputConfig);
+$('lottoType').addEventListener('change', () => {});
+
+
+// Keypad Input
+document.querySelectorAll('.keypad button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const numInput = $('num');
+        const config = BET_CONFIG[$('betType').value];
+        const maxLength = config ? config.length : 1; 
+
+        if (btn.id === 'clearBtn') {
+            numInput.value = '';
+        } else if (numInput.value.length < maxLength) {
+            numInput.value += btn.textContent;
+        }
+    });
+});
+
+
+// ADD TO CART FUNCTION
+$('addToCartBtn').addEventListener('click', () => {
+    const s = getSession(); if (!s) { alert('กรุณาเข้าสู่ระบบ'); return; }
+    const num = $('num').value.trim();
+    const amt = Number($('amt').value) || 0;
+    const lottoType = $('lottoType').value;
+    const betType = $('betType').value;
+    const config = BET_CONFIG[betType];
+
+    if (!num || amt <= 0 || num.length !== config.length) { 
+        alert(`กรอกเลขไม่ถูกต้อง: ต้องเป็น ${config.length} หลักสำหรับ ${config.name}`); 
+        return; 
+    }
+
+    const limitKey = `${lottoType}_${betType}_${num}`;
+    const currentConfirmedTotal = purchases[limitKey] || 0; 
+    const totalInCart = cart.filter(item => item.lottoType === lottoType && item.betType === betType && item.num === num).reduce((sum, item) => sum + item.amt, 0);
+
+    if (currentConfirmedTotal + totalInCart + amt > config.limit) { 
+        alert(`เลข ${num} ประเภท ${config.name} เต็มแล้ว (จำกัด ${config.limit} ฿)`); 
+        return; 
+    }
+
+    // Check user balance before adding to cart (pre-validation)
+    let users = loadUsers();
+    if (users[s.username] && (users[s.username].balance < amt + cart.reduce((sum, item) => sum + item.amt, 0) + amt)) {
+        // NOTE: This check is not perfect because the final check happens on notifyTransferBtn, but it's good for UX.
+        // For simplicity, we skip balance check here and let it fail on notifyTransferBtn or assume they will deposit.
+    }
+
+
+    cart.push({ num, amt, lottoType, betType, timeAdded: Date.now() });
+    $('num').value = ''; 
+    $('amt').value = 10; 
+    renderCart();
+    alert(`เพิ่ม ${num} (${config.name}) เข้าตะกร้าแล้ว`);
+});
+
+// PAY BUTTON (Modified - Now initiates QR code flow)
+$('payLineBtnForCart').addEventListener('click', () => {
+    if (cart.length === 0) return;
+    const cartTotal = cart.reduce((sum, item) => sum + item.amt, 0);
+
+    $('qrAmt').textContent = cartTotal.toFixed(2);
+    $('qrNumItems').textContent = cart.length;
+
+    $('qrModal').classList.add('visible');
+});
+
+// NOTIFY TRANSFER BUTTON (Simulates Auto-Confirmation of successful transfer) - โค้ดที่แก้ไข
+$('notifyTransferBtn').addEventListener('click', () => {
+    if (cart.length === 0) {
+        alert('ตะกร้าว่างเปล่า');
+        $('qrModal').classList.remove('visible');
+        return;
+    }
+
+    const s = getSession();
+    if (!s) { $('qrModal').classList.remove('visible'); return; }
+
+    let users = loadUsers();
+    const cartTotal = cart.reduce((sum, item) => sum + item.amt, 0);
+    
+    // Final balance check before transaction (CRITICAL)
+    if (users[s.username].balance < cartTotal) {
+         alert(`ยอดเงินในบัญชีไม่พอ! กรุณาฝากเพิ่ม ${cartTotal.toFixed(2)} ฿`);
+         $('qrModal').classList.remove('visible');
+         return;
+    }
+
+    let bills = loadBills();
+
+    // 1. Create ONE Bill/Order object
+    const newBill = { 
+        id: 'B' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
+        user: s.username,
+        totalAmt: cartTotal,
+        time: Date.now(),
+        isPaid: true, // สถานะเปลี่ยนเป็น TRUE ทันที (จำลองการยืนยันอัตโนมัติ)
+        checked: false, 
+        items: [...cart], 
+    };
+
+    // 2. Deduct money (since paid is true)
+    users[s.username].balance -= cartTotal;
+
+    // 3. Record the ONE Bill and save users
+    bills.push(newBill);
+    saveBills(bills);
+    saveUsers(users);
+    
+    // 4. UPDATE LIMITS IMMEDIATELY
+    newBill.items.forEach(item => {
+        const limitKey = `${item.lottoType}_${item.betType}_${item.num}`;
+        purchases[limitKey] = (purchases[limitKey] || 0) + item.amt;
+    });
+    savePurchases(); 
+    
+    // 5. Update session and clear cart
+    setSession({ username: s.username, balance: users[s.username].balance });
+    cart = [];
+    $('qrModal').classList.remove('visible');
+
+    // 6. Re-render UI
+    renderAll();
+
+    alert(`รายการสั่งซื้อถูกส่งเข้าระบบแล้ว! หักเงิน ${cartTotal.toFixed(2)} ฿ และยืนยันการชำระเงินอัตโนมัติ`);
+});
+
+
+// Close QR Modal
+$('closeQrModal').addEventListener('click', () => {
+    $('qrModal').classList.remove('visible');
+});
+
+// Close Bill Detail Modal
+$('closeBillDetailModal').addEventListener('click', () => {
+    $('billDetailModal').classList.remove('visible');
+});
+
+
+// MANUAL CHECK RESULTS FUNCTION
+$('checkResultsBtn').addEventListener('click', () => {
+    const s = getSession();
+    if (!s) { alert('กรุณาเข้าสู่ระบบ'); return; }
+
+    let bills = loadBills();
+    let totalWinAmount = 0;
+    let newWinsCount = 0;
+
+    const users = loadUsers(); 
+
+    // Check if the current user has already updated balance in this session
+    const currentSession = getSession();
+
+    bills = bills.map(bill => {
+        if (!bill.checked && bill.isPaid) {
+            let billTotalPayout = 0;
+            let billHasWin = false;
+
+            bill.items = bill.items.map(item => {
+                const result = checkWin(item.lottoType, item.betType, item.num);
+                item.win = result.win;
+
+                if (result.win) {
+                    const winAmount = item.amt * result.payout;
+                    item.payout = winAmount;
+                    billTotalPayout += winAmount;
+                    billHasWin = true;
+                } else {
+                    item.payout = 0;
+                }
+                return item;
+            });
+
+            // Update overall bill status
+            bill.checked = true;
+            if (billHasWin) {
+                totalWinAmount += billTotalPayout;
+                newWinsCount++;
+
+                // อัปเดตยอดเงินในบัญชีผู้ใช้
+                if (users[bill.user]) {
+                    users[bill.user].balance += billTotalPayout;
+                }
+            }
+        }
+        return bill;
+    });
+
+    saveBills(bills);
+    saveUsers(users); 
+
+    // อัปเดตยอดเงินใน Session 
+    if (currentSession && users[currentSession.username]) {
+        setSession({ username: currentSession.username, balance: users[currentSession.username].balance });
+    }
+
+    if (newWinsCount > 0) {
+        alert(`ตรวจผลหวยสำเร็จ! บิลถูกรางวัล ${newWinsCount} บิล\\nได้รับเงินรางวัลรวม ${totalWinAmount.toFixed(2)} ฿\\n(ยอดเงินถูกเพิ่มในบัญชีแล้ว)`);
+    } else {
+        alert('ตรวจผลหวยสำเร็จ! ไม่มีบิลถูกรางวัลในงวดที่ถูกตรวจนี้');
+    }
+
+    renderAll();
+});
+
+
+// Attach Admin Button Listeners
+$('adminPanelBtn').addEventListener('click', showAdminPanel);
+$('closeAdminPanel').addEventListener('click', hideAdminPanel);
+
+
+// Close Result Modal
+$('closeResultModal').addEventListener('click', () => {
+    $('resultModal').classList.remove('visible');
+});
+
+// Initial Setup
+(function init() {
+    let users = loadUsers();
+    // Ensure Admin account exists for setup
+    if (!users[ADMIN_USERNAME]) { 
+        users[ADMIN_USERNAME] = { password: ADMIN_PASSWORD, balance: 999999.00, txs: [] };
+        saveUsers(users);
+    }
+    // Ensure 'demo' user exists for general testing
+    if (!users['demo']) { 
+        users['demo'] = { password: '123', balance: 1000.00, txs: [] };
+        saveUsers(users);
+    }
+
+    renderBetTypeOptions(); 
+    renderAll();
+})();
+</script>
+</body>
+</html>
