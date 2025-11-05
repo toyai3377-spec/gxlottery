@@ -343,7 +343,7 @@ button#loginBtn:hover {
                         <label class="small">จำนวนเงิน (บาท)</label>
                         <input id="amt" type="number" min="1" value="10">
                     </div>
-                    <button id="addToCartBtn" style="width:150px;margin-top:0">เพิ่มลงตะกร้า</button>
+                    <button id="addToCartBtn" style="width:150px;margin-top:0">เพิ่มลงตะกร้า</button> 
                 </div>
 
                 <div class="keypad">
@@ -546,7 +546,7 @@ const wnRef = database.ref('winningNumbers');
 // --- CONFIGURATION ---
 const ADMIN_USERNAME = 'admin'; 
 const ADMIN_PASSWORD = '774570'; 
-const INITIAL_BALANCE = 1000.00;
+const INITIAL_BALANCE = 0.00; 
 
 const BET_CONFIG = {
     '3_straight': { name: '3 ตัวตรง', length: 3, payout: 850, limit: 200 }, 
@@ -994,8 +994,25 @@ async function renderAdminPanel() {
         
         const billIdShort = bill.id.slice(-6);
         const paidStatusDisplay = bill.isPaid ? 
-            `<span style="color:var(--deposit-btn-start); font-weight:bold;">✅ ชำระอัตโนมัติแล้ว</span>` : 
-            `<span style="color:var(--danger); font-weight:bold;">🔴 รอยืนยัน</span>`;
+            const bills = await loadAllBills();
+txContainer.innerHTML = '<h4>รายการซื้อทั้งหมด (บิล, ล่าสุดก่อน):</h4>';
+
+// Sort by latest time first
+bills.sort((a, b) => b.time - a.time).forEach((bill) => {
+    
+    const billIdShort = bill.id.slice(-6);
+    const paidStatusDisplay = bill.isPaid ? 
+        `<span style="color:var(--deposit-btn-start); font-weight:bold;">✅ ชำระเงินแล้ว</span>` : 
+        `<span style="color:var(--danger); font-weight:bold;">🔴 รอยืนยัน (รอกรตรวจสอบโอน)</span>`;
+
+    const el = document.createElement('div');
+    el.classList.add('tx-item');
+    el.style.flexDirection = 'column';
+    el.style.alignItems = 'flex-start';
+    el.innerHTML = `
+        `;
+    // ...
+});
 
         const el = document.createElement('div');
         el.classList.add('tx-item');
