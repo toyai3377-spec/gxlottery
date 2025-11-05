@@ -1,4 +1,4 @@
-       <!doctype html>
+      <!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
@@ -547,7 +547,7 @@ const wnRef = database.ref('winningNumbers');
 // --- CONFIGURATION ---
 const ADMIN_USERNAME = 'admin'; 
 const ADMIN_PASSWORD = '774570'; 
-const INITIAL_BALANCE = 1000.00;
+const INITIAL_BALANCE = 0.00;
 
 const BET_CONFIG = {
     '3_straight': { name: '3 ตัวตรง', length: 3, payout: 850, limit: 200 }, 
@@ -579,15 +579,17 @@ const DEFAULT_WINNING_NUMBERS = {
  * Ensures initial data structure (admin, demo, WN) exists in the database.
  */
 async function ensureInitialData() {
-    await usersRef.child(ADMIN_USERNAME).once('value', snapshot => {
-        if (!snapshot.exists()) {
-            usersRef.child(ADMIN_USERNAME).set({ 
-                password: ADMIN_PASSWORD, 
-                balance: 999999.00
-            });
-            console.log("Admin user created.");
-        }
-    });
+    // โค้ดที่แก้ไขแล้ว: กำหนด isAdmin: true ให้ Admin
+await usersRef.child(ADMIN_USERNAME).once('value', snapshot => {
+    if (!snapshot.exists()) {
+        usersRef.child(ADMIN_USERNAME).set({ 
+            password: ADMIN_PASSWORD, 
+            balance: 999999.00,
+            isAdmin: true // <-- FIX: เพิ่มสถานะแอดมิน
+        });
+        console.log("Admin user created.");
+    }
+});
 
     await usersRef.child('demo').once('value', snapshot => {
         if (!snapshot.exists()) {
@@ -1366,4 +1368,4 @@ document.querySelectorAll('.keypad button').forEach(btn => {
 })();
 </script>
 </body>
-</html>  
+</html>
