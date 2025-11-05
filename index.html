@@ -284,6 +284,19 @@ button#loginBtn:hover {
 </style>
 </head>
 <body>
+
+<script>
+(function () {
+    const ua = navigator.userAgent;
+    // ตรวจสอบ In-App Browser ของ LINE, TikTok, Facebook/Messenger
+    const isProblematicApp = /Line|TikTok|FBAV|FBAN|Messenger/i.test(ua);
+    
+    if (isProblematicApp) {
+        // แสดงข้อความแจ้งเตือนที่ชัดเจนและกด OK เพื่อบังคับให้ผู้ใช้ต้องแก้ไข
+        alert("⚠️ สำคัญมาก: ระบบตรวจพบว่าคุณกำลังเปิดผ่านแอปแชท (TikTok/LINE) ซึ่งอาจทำให้การสมัคร/ล็อกอินล้มเหลว\\n\\nกรุณากด OK แล้วใช้เมนู '...' หรือ 'ลูกศร' เพื่อ 'เปิดในเบราว์เซอร์ Chrome/Safari' ก่อนดำเนินการสมัครค่ะ!");
+    }
+})();
+</script>
 <div class="wrap">
     <div class="card" id="loginCard">
         <h2>เข้าสู่ระบบ Gx lottery+</h2> 
