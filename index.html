@@ -523,10 +523,14 @@ const firebaseConfig = {
   measurementId: "G-09PW99QK06"
 };
 
+// **[แก้ไข]: ย้ายการประกาศ 'database' ออกมาด้านนอกเพื่อให้โค้ดทั้งหมดมองเห็น**
+let database; 
+
 // Initialize Firebase
 try {
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    // **[แก้ไข]: กำหนดค่าให้กับตัวแปรที่ประกาศไว้ด้านนอก**
+    database = firebase.database(); 
     console.log("Firebase initialized successfully.");
 } catch (error) {
     console.error("Error initializing Firebase:", error);
