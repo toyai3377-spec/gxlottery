@@ -1,4 +1,4 @@
-      <!doctype html>
+<!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
@@ -184,7 +184,7 @@ button#adminPanelBtn:hover{
 .pending{background:#fbbf24;color:#0a1811}
 .win{background:#72ed9a;color:#0a1811}
 .lose{background:#ef4444;color:#fff}
-.pending-admin{background:#fbbf24;color:#0a1811}
+.pending-admin{background:#d0d0d0;color:#1a1a1a} /* Changed color for UNPAID status */
 
 /* Login Card - NEW MODERN STYLE */
 #loginCard{
@@ -293,7 +293,7 @@ button#loginBtn:hover {
     
     if (isProblematicApp) {
         // แสดงข้อความแจ้งเตือนที่ชัดเจนและกด OK เพื่อบังคับให้ผู้ใช้ต้องแก้ไข
-        alert("⚠️ สำคัญมาก: ระบบตรวจพบว่าคุณกำลังเปิดผ่านแอปแชท (TikTok/LINE) ซึ่งอาจทำให้การสมัคร/ล็อกอินล้มเหลว\\n\\nกรุณากด OK แล้วใช้เมนู '...' หรือ 'ลูกศร' เพื่อ 'เปิดในเบราว์เซอร์ Chrome/Safari' ก่อนดำเนินการสมัครค่ะ!");
+        alert(⚠️ สำคัญมาก: ระบบตรวจพบว่าคุณกำลังเปิดผ่านแอปแชท (TikTok/LINE) ซึ่งอาจทำให้การสมัคร/ล็อกอินล้มเหลว\\n\\nกรุณากด OK แล้วใช้เมนู '...' หรือ 'ลูกศร' เพื่อ 'เปิดในเบราว์เซอร์ Chrome/Safari' ก่อนดำเนินการสมัครค่ะ!");
     }
 })();
 </script>
@@ -368,7 +368,7 @@ button#loginBtn:hover {
                         <span>ยอดรวมทั้งหมด:</span>
                         <span id="cartTotal">0.00 ฿</span>
                     </div>
-                    <button id="payLineBtnForCart" class="success" disabled>ชำระเงิน</button>
+                    <button id="payLineBtnForCart" class="success" disabled>ยืนยันคำสั่งซื้อ</button>
                 </div>
             </div>
 
@@ -383,7 +383,7 @@ button#loginBtn:hover {
 
                 <div class="card">
                     <h3>ฝ่ายบริการ</h3>
-                    <a href="#" target="_blank" class="contact-link">แชทกับเรา</a>
+                    <a href="https://lin.ee/Mm1caQx" target="_blank" class="contact-link">แชทกับเรา</a>
                     <a href="#" target="_blank" class="contact-link" style="margin-top:8px">ติดต่อทาง WhatsApp</a>
                 </div>
 
@@ -459,8 +459,8 @@ button#loginBtn:hover {
             </div>
 
             <h3 style="margin-top:30px;">3. รายการซื้อทั้งหมด (บิล)</h3>
-            <div id="txListAdmin" class="tx-list"></div>
-        </div>
+            <div id="txListAdmin" class="tx-list" style="overflow-y:visible; max-height:none;"></div>
+            </div>
     </div>
 </div>
 
@@ -474,7 +474,7 @@ button#loginBtn:hover {
     <img src="truemoney-qr.png" alt="TrueMoney QR Code" style="width:100%; height:100%; display:block;">
 </div>
 
-        <p class="small">กรุณาโอนเงินเข้าบัญชีธนาคารตามยอดที่แสดง จากนั้นกด "แจ้งโอนเงิน" **(ระบบจะยืนยันอัตโนมัติ)**</p>
+        <p class="small">กรุณาโอนเงินเข้าบัญชีธนาคารตามยอดที่แสดง จากนั้นกด "แจ้งโอนเงิน" **(บิลจะถูกส่งไปรอการอนุมัติจากแอดมิน)**</p>
         <button id="notifyTransferBtn" class="success">แจ้งโอนเงิน</button>
         <button id="closeQrModal" class="ghost">ยกเลิก</button>
     </div>
@@ -547,7 +547,7 @@ const wnRef = database.ref('winningNumbers');
 // --- CONFIGURATION ---
 const ADMIN_USERNAME = 'admin'; 
 const ADMIN_PASSWORD = '774570'; 
-const INITIAL_BALANCE = 0.00;
+const INITIAL_BALANCE = 0.00; // Keep 0.00 for BNPL system
 
 const BET_CONFIG = {
     '3_straight': { name: '3 ตัวตรง', length: 3, payout: 850, limit: 200 }, 
@@ -695,12 +695,13 @@ function getBetName(betType) { return BET_CONFIG[betType] ? BET_CONFIG[betType].
 
 
 function getStatusBadge(bill) {
-    if (!bill.isPaid) return `<span class="status-badge pending-admin">🟡 รอยืนยันชำระ</span>`; 
+    // **MODIFIED: Status logic for BNPL**
+    if (!bill.isPaid) return `<span class="status-badge pending-admin">⚪ รอยืนยันชำระ</span>`; // Unpaid
     if (bill.checked) {
         const anyWin = bill.items.some(item => item.win);
         return `<span class="status-badge ${anyWin ? 'win' : 'lose'}">${anyWin ? '✅ ถูกรางวัล' : '❌ ไม่ถูกรางวัล'}</span>`;
     }
-    return `<span class="status-badge pending">⚪ ชำระแล้ว</span>`; 
+    return `<span class="status-badge pending">🟡 ชำระแล้ว</span>`; // Paid but not checked
 }
 
 async function renderUserArea() {
@@ -711,8 +712,9 @@ async function renderUserArea() {
         const currentUserData = await loadCurrentUser(); 
         
         if (currentUserData) {
+            // **MODIFIED: Show balance for winnings only in BNPL**
             let userInfoText = `goldoraX - ${s.username}`;
-            userInfoText += ` (ยอดเงิน: ${currentUserData.balance.toFixed(2)} ฿)`;
+            userInfoText += ` (ยอดรางวัล: ${currentUserData.balance.toFixed(2)} ฿)`;
 
             $('user-name').textContent = userInfoText;
             $('loginCard').classList.add('hidden');
@@ -830,7 +832,7 @@ function renderCart() {
             const el = document.createElement('div');
             el.classList.add('cart-item');
             el.innerHTML = `
-                <div>${item.num} (${betName}) x ${item.amt.toFixed(2)} ฿</div>
+                <div>${item.num} (${betName}) x ${item.amt.toFixed(2)} ฿}</div>
                 <button id="removeCartItem" data-index="${index}" class="danger" style="width:40px;padding:5px;margin:0">X</button>
             `;
             container.appendChild(el);
@@ -838,7 +840,7 @@ function renderCart() {
         payLineBtnForCart.disabled = false;
     }
 
-    payLineBtnForCart.textContent = `ชำระเงิน (${cartTotal.toFixed(2)} ฿)`;
+    payLineBtnForCart.textContent = `ยืนยันคำสั่งซื้อ (${cartTotal.toFixed(2)} ฿)`;
     $('cartTotal').textContent = `${cartTotal.toFixed(2)} ฿`;
     $('cartCount').textContent = cart.length;
 
@@ -965,7 +967,8 @@ async function populateUserEditDropdown() {
     Object.keys(users).filter(u => u !== ADMIN_USERNAME).forEach(username => {
         const option = document.createElement('option');
         option.value = username;
-        option.textContent = `${username} (ยอดเงิน: ${users[username].balance.toFixed(2)} ฿)`;
+        // **MODIFIED: Show user balance as 'ยอดรางวัล' for BNPL**
+        option.textContent = `${username} (ยอดรางวัล: ${users[username].balance.toFixed(2)} ฿)`;
         select.appendChild(option);
     });
 
@@ -979,6 +982,46 @@ async function populateUserEditDropdown() {
     }
 }
 
+// **NEW ADMIN FUNCTIONS**
+async function deleteBill(billId) {
+    if (!confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบบิล #${billId.slice(-6)}? (บิลจะถูกยกเลิก และคืนโควต้า)`)) return;
+
+    // 1. Fetch the bill to get details for limit update
+    const billSnapshot = await billsRef.child(billId).once('value');
+    const bill = billSnapshot.val();
+    if (!bill) return;
+
+    // 2. Update Limits (Reverse the purchase to free up limits)
+    const currentLimits = await loadLimits();
+    bill.items.forEach(item => {
+        const limitsKey = `${item.lottoType}_${item.betType}_${item.num}`;
+        currentLimits[limitsKey] = Math.max(0, (currentLimits[limitsKey] || 0) - item.amt);
+    });
+    await updateLimits(currentLimits);
+
+    // 3. Delete the bill
+    await billsRef.child(billId).remove();
+    alert(`ลบบิล #${billId.slice(-6)} และคืนโควต้าเรียบร้อย`);
+    await renderAdminPanel();
+    await renderTxs();
+}
+
+async function approveBill(billId) {
+    if (!confirm(`คุณแน่ใจหรือไม่ว่าลูกค้าได้ชำระเงินสำหรับบิล #${billId.slice(-6)} เรียบร้อยแล้ว?`)) return;
+
+    try {
+        // **CRITICAL: Set isPaid: true. No balance deduction for BNPL**
+        await billsRef.child(billId).update({ isPaid: true }); 
+        alert(`บิล #${billId.slice(-6)} ได้รับการอนุมัติการชำระเงินแล้ว (สถานะเป็น 'ชำระแล้ว')`);
+        await renderAdminPanel();
+        await renderTxs();
+    } catch (error) {
+        alert("เกิดข้อผิดพลาดในการอนุมัติ: " + error.message);
+    }
+}
+// **END NEW ADMIN FUNCTIONS**
+
+
 async function renderAdminPanel() {
     const txContainer = $('txListAdmin');
     
@@ -990,33 +1033,67 @@ async function renderAdminPanel() {
 
     // 3. Render Transaction List (Bills)
     const bills = await loadAllBills();
-    txContainer.innerHTML = '<h4>รายการซื้อทั้งหมด (บิล, ล่าสุดก่อน):</h4>';
+    txContainer.innerHTML = '<h4>รายการซื้อทั้งหมด (บิล, รอยืนยันก่อน แล้วตามด้วยล่าสุด):</h4>';
 
-    // Sort by latest time first
-    bills.sort((a, b) => b.time - a.time).forEach((bill) => {
+    // **[MODIFIED] Sorting: Unpaid bills (isPaid: false) come first, then sort by time (latest first)**
+    bills.sort((a, b) => {
+        // Primary sort: Unpaid bills (isPaid: false) come first
+        if (a.isPaid !== b.isPaid) {
+            return a.isPaid ? 1 : -1; // false comes before true
+        }
+        // Secondary sort: Latest time first
+        return b.time - a.time;
+    }).forEach((bill) => {
         
         const billIdShort = bill.id.slice(-6);
-        const paidStatusDisplay = bill.isPaid ? 
-            `<span style="color:var(--deposit-btn-start); font-weight:bold;">✅ ชำระอัตโนมัติแล้ว</span>` : 
+        const isPaid = bill.isPaid;
+        const paidStatusDisplay = isPaid ? 
+            `<span style="color:var(--deposit-btn-start); font-weight:bold;">✅ ชำระแล้ว</span>` : 
             `<span style="color:var(--danger); font-weight:bold;">🔴 รอยืนยัน</span>`;
 
+        // **MODIFIED: Admin Action Buttons (No change here)**
+        let actionButtons = '';
+        if (!isPaid) {
+            actionButtons = `
+                <div style="display:flex; gap:5px; margin-top:5px; width:100%;">
+                    <button onclick="approveBill('${bill.id}')" class="success" style="flex:1; padding:8px; margin:0;">อนุมัติ</button>
+                    <button onclick="deleteBill('${bill.id}')" class="danger" style="flex:1; padding:8px; margin:0;">ลบบิล</button>
+                </div>
+            `;
+        } else if (!bill.checked) {
+             actionButtons = `<button onclick="deleteBill('${bill.id}')" class="danger" style="width:100%; padding:8px; margin-top:5px;">ลบบิล</button>`;
+        }
+        
         const el = document.createElement('div');
         el.classList.add('tx-item');
         el.style.flexDirection = 'column';
         el.style.alignItems = 'flex-start';
+
+        // **[MODIFIED] Visual Emphasis for Unpaid Bills**
+        if (!isPaid) {
+            el.style.border = '2px solid var(--danger)';
+            el.style.background = 'rgba(239, 68, 68, 0.1)'; // Slight red background
+        }
+        
         el.innerHTML = `
             <div style="width:100%; display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <b>บิล #${billIdShort}</b> (${bill.items.length} รายการ) | ยอดรวม: ${bill.totalAmt.toFixed(2)} ฿
-                    <div class="small">${new Date(bill.time).toLocaleString()} โดย **${bill.user}**</div>
+                    <div style="font-size:1.1em; font-weight:700;">
+                        บิล #${billIdShort} โดย <span style="color:var(--accent-light);">${bill.user}</span>
+                    </div>
+                    <div class="small">
+                        ${new Date(bill.time).toLocaleString()} | ยอดรวม: ${bill.totalAmt.toFixed(2)} ฿
+                    </div>
                 </div>
                 <div style="text-align:right;">${getStatusBadge(bill)}</div>
             </div>
             <div style="margin-top:10px; width:100%; display:flex; justify-content:space-between; align-items:center;">
-                <div class="small"><a href="#" onclick="showBillDetailModal('${bill.id}'); event.preventDefault();" style="color:var(--text-main)">[ดูรายละเอียดรายการย่อย]</a></div>
+                <div class="small">
+                    <a href="#" onclick="showBillDetailModal('${bill.id}'); event.preventDefault();" style="color:var(--accent-dark); font-weight:bold;">[ดูรายการย่อย]</a>
+                </div>
                 <div>${paidStatusDisplay}</div>
             </div>
-        `;
+            ${actionButtons} `;
         txContainer.appendChild(el);
     });
 }
@@ -1102,6 +1179,9 @@ $('addToCartBtn').addEventListener('click', async () => {
     const limits = await loadLimits();
     const limitsKey = `${lottoType}_${betType}_${num}`;
     const currentConfirmedTotal = limits[limitsKey] || 0; 
+    
+    // **MODIFIED: NO BALANCE CHECK FOR BNPL**
+
     const totalInCart = cart.filter(item => item.lottoType === lottoType && item.betType === betType && item.num === num).reduce((sum, item) => sum + item.amt, 0);
 
     if (currentConfirmedTotal + totalInCart + amt > config.limit) { 
@@ -1109,13 +1189,8 @@ $('addToCartBtn').addEventListener('click', async () => {
         return; 
     }
     
-    const currentUser = await loadCurrentUser();
-    const cartTotal = cart.reduce((sum, item) => sum + item.amt, 0);
-
-    if (currentUser.balance < cartTotal + amt) {
-        alert(`ยอดเงินในบัญชีไม่พอ! (ต้องการ ${cartTotal + amt} ฿)`);
-        return;
-    }
+    // **MODIFIED: REMOVED BALANCE CHECK HERE**
+    // if (currentUser.balance < cartTotal + amt) { ... }
 
     cart.push({ num, amt, lottoType, betType, timeAdded: Date.now() });
     $('num').value = ''; 
@@ -1125,7 +1200,7 @@ $('addToCartBtn').addEventListener('click', async () => {
 });
 
 
-// NOTIFY TRANSFER BUTTON (Simulates Auto-Confirmation)
+// NOTIFY TRANSFER BUTTON (Submits Order for Admin Confirmation)
 $('notifyTransferBtn').addEventListener('click', async () => {
     if (cart.length === 0) {
         alert('ตะกร้าว่างเปล่า');
@@ -1137,14 +1212,8 @@ $('notifyTransferBtn').addEventListener('click', async () => {
     if (!s) { $('qrModal').classList.remove('visible'); return; }
 
     const cartTotal = cart.reduce((sum, item) => sum + item.amt, 0);
-    const currentUser = await loadCurrentUser();
     
-    // Final balance check before transaction (CRITICAL)
-    if (currentUser.balance < cartTotal) {
-         alert(`ยอดเงินในบัญชีไม่พอ! กรุณาฝากเพิ่ม ${cartTotal.toFixed(2)} ฿`);
-         $('qrModal').classList.remove('visible');
-         return;
-    }
+    // **MODIFIED: NO BALANCE CHECK AND NO MONEY DEDUCTION HERE (BNPL)**
 
     try {
         // 1. Create ONE Bill/Order object
@@ -1153,19 +1222,15 @@ $('notifyTransferBtn').addEventListener('click', async () => {
             user: s.username,
             totalAmt: cartTotal,
             time: Date.now(),
-            isPaid: true, 
+            isPaid: false, // <-- CRITICAL: Set to false (Renders as 'รอยืนยันชำระ')
             checked: false, 
             items: [...cart], 
         };
-
-        // 2. Deduct money AND update current balance
-        const newBalance = currentUser.balance - cartTotal;
-        await updateUserBalance(s.username, newBalance);
-
-        // 3. Record the ONE Bill
-        await addBill(newBill);
         
-        // 4. UPDATE LIMITS IMMEDIATELY
+        // 2. Record the ONE Bill
+        const billId = await addBill(newBill);
+        
+        // 3. UPDATE LIMITS IMMEDIATELY (Order is reserved/placed)
         const currentLimits = await loadLimits();
         newBill.items.forEach(item => {
             const limitsKey = `${item.lottoType}_${item.betType}_${item.num}`;
@@ -1173,14 +1238,14 @@ $('notifyTransferBtn').addEventListener('click', async () => {
         });
         await updateLimits(currentLimits);
         
-        // 5. Clear cart
+        // 4. Clear cart
         cart = [];
         $('qrModal').classList.remove('visible');
 
-        // 6. Re-render UI
+        // 5. Re-render UI
         await renderAll();
 
-        alert(`รายการสั่งซื้อถูกส่งเข้าระบบแล้ว! หักเงิน ${cartTotal.toFixed(2)} ฿ และยืนยันการชำระเงินอัตโนมัติ`);
+        alert(`รายการสั่งซื้อ #${billId.slice(-6)} ถูกส่งเข้าระบบแล้ว! ยอดรวม ${cartTotal.toFixed(2)} ฿ กำลังรอการยืนยันชำระเงินจากแอดมิน`);
         
     } catch (error) {
         alert('เกิดข้อผิดพลาดในการทำรายการ: ' + error.message);
@@ -1202,7 +1267,7 @@ $('checkResultsBtn').addEventListener('click', async () => {
     let updates = {};
 
     for (let bill of bills) {
-        // Only check bills that are paid and not yet checked
+        // Only check bills that are PAID and not yet checked
         if (bill.isPaid && !bill.checked) {
             let billTotalPayout = 0;
             let billHasWin = false;
@@ -1228,7 +1293,7 @@ $('checkResultsBtn').addEventListener('click', async () => {
                 totalWinAmount += billTotalPayout;
                 newWinsCount++;
                 
-                // Update user balance (in local copy of users object)
+                // Update user balance (Add winnings to balance)
                 if (users[bill.user]) {
                     users[bill.user].balance = (users[bill.user].balance || 0) + billTotalPayout;
                     updates[`users/${bill.user}/balance`] = users[bill.user].balance;
@@ -1315,7 +1380,7 @@ $('updateBalanceBtn').addEventListener('click', async () => {
         
         try {
             await updateUserBalance(selectedUser, newBalance);
-            alert(`อัปเดตยอดเงินผู้ใช้ ${selectedUser} สำเร็จ: ยอดเงินใหม่คือ ${newBalance.toFixed(2)} ฿`);
+            alert(`อัปเดตยอดรางวัลผู้ใช้ ${selectedUser} สำเร็จ: ยอดเงินใหม่คือ ${newBalance.toFixed(2)} ฿`);
             $('balanceAmtInput').value = 100; // Reset input
 
             // Re-render UI
